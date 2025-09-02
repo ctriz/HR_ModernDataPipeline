@@ -1,0 +1,15 @@
+# .gitignore
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+utils/config.py
+utils/config.yaml
+.venv/
+analytics/delta/
+analytics/delta/chk/
+logs/
+test/

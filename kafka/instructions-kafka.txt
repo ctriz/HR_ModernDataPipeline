@@ -1,0 +1,103 @@
+$json = Get-Content -Raw -Path .\debezium-postgres-connector.json
+$headers = @{ "Content-Type" = "application/json" }
+Invoke-WebRequest -Uri http://localhost:8083/connectors -Method Post -Headers $headers -Body $json
+
+curl -s -X POST -H "Content-Type: application/json" \
+  --data @debezium-postgres-connector.json \
+  http://localhost:8083/connectors
+
+# Assuming fixed config in .\debezium-postgres-connector.json
+Invoke-RestMethod "http://localhost:8083/connector-plugins/io.debezium.connector.postgresql.PostgresConnector/config/validate" -Method Post -ContentType "application/json" -Body (Get-Content -Raw.\debezium-postgres-connector.json) | ConvertTo-Json -Depth 10
+
+Invoke-RestMethod `
+  -Uri "http://localhost:8083/connector-plugins/io.debezium.connector.postgresql.PostgresConnector/config/validate" `
+  -Method Put -ContentType "application/json" `
+  -Body (Get-Content -Raw -Path .\debezium-postgres-connector.json) |
+  ConvertTo-Json -Depth 10
+  
+  
+  # Load only the inner "config" object from your JSON file
+$cfg = (Get-Content -Raw -Path .\debezium-postgres-connector.json | ConvertFrom-Json).config
+
+Invoke-RestMethod `
+  -Uri "http://localhost:8083/connector-plugins/io.debezium.connector.postgresql.PostgresConnector/config/validate" `
+  -Method Put -ContentType "application/json" `
+  -Body ($cfg | ConvertTo-Json -Depth 10) |
+  ConvertTo-Json -Depth 10
+
+$cfg = (Get-Content -Raw -Path .\debezium-postgres-connector.json | ConvertFrom-Json).config
+
+Invoke-RestMethod `
+  -Uri "http://localhost:8083/connectors/hr-txn-pg-source/config" `
+  -Method Put -ContentType "application/json" `
+  -Body ($cfg | ConvertTo-Json -Depth 10) |
+  ConvertTo-Json -Depth 10
+
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source/status | ConvertTo-Json -Depth 5
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source/tasks/0/status | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source | ConvertTo-Json -Depth 6
+
+
+#list topics
+docker exec -it kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
+
+#delete topics
+docker exec -it begin-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic <topic-name>
+
+#peek messages
+docker exec -it kafka-kafka-1 kafka-console-consumer \
+  --bootstrap-server kafka:9092 \
+  --topic hr_txn.hr_txn.employee_compensation \
+  --from-beginning \
+  --property print.key=true --property print.headers=true --max-messages 5
+  
+  
+
+
+curl -X PUT http://localhost:8081/config/hr.training.events-value -H "Content-Type: application/vnd.schemaregistry.v1+json" -d '{"compatibility": "FULL_TRANSITIVE}'
+
+curl http://localhost:8081/config/hr.training.events-value
+
+
+Invoke-WebRequest -Uri http://localhost:8081/config/hr.training.events-value -Method PUT -Headers @{"Content-Type"="application/vnd.schemaregistry.v1+json"} -Body '{"compatibility": "FULL_TRANSITIVE"}'
+
+Invoke-WebRequest -Uri http://localhost:8081/config/hr.training.events-value
+
+Invoke-WebRequest -Uri http://localhost:8081/config/hr_txn.hr_txn.department
+
+#peek messages
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true --max-messages 5
+  
+docker exec -it begin-kafka-1 kafka-avro-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true --property schema.registry.url=http://localhost:8080/ui/clusters/local/schemas/hr_txn.hr_txn.employee_compensation-key --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true --property value.deserializer=org.apache.kafka.connect.json.JsonConverter --property key.deserializer=org.apache.kafka.connect.json.JsonConverter --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true --property print.value=true --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.StringDeserializer --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer \
+--bootstrap-server kafka:29092 \
+--topic hr_txn.hr_txn.employee_compensation \
+--from-beginning \
+--property print.key=true \
+--property print.headers=true \
+--property print.value=true \
+--property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+--property value.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+--max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true  --property schema.registry.url=http://localhost:8080/ui/clusters/local/schemas/hr_txn.hr_txn.employee_compensation-key --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true  --property schema.registry.url=http://localhost:8080 --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-avro-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true  --property schema.registry.url=http://localhost:8080 --max-messages 5
+
+
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.departments
+
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.employee_compensation
+
+#peek messages
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.employee_compensation --from-beginning --property print.key=true --property print.headers=true --max-messages 5
+
+docker exec -it begin-kafka-1 kafka-console-consumer --bootstrap-server kafka:29092 --topic hr_txn.hr_txn.departments --from-beginning --property print.key=true --property print.headers=true --max-messages 5
