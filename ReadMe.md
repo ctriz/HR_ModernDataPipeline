@@ -7,8 +7,10 @@ This document outlines the initial phase of the HR data pipeline, focusing on th
 
 ## Architecture
 
-The pipeline begins with a **Postgres** OLTP database, where changes are captured using **Debezium** and streamed to **Kafka**. **Apache Airflow** orchestrates this process, and a **Spark Structured Streaming** job reads the data from Kafka and lands it into the **Bronze Layer** of the Delta Lake.
-<img width="592" height="706" alt="HR Data   Analytics drawio (3)" src="https://github.com/user-attachments/assets/7e61c7ed-e9c7-40bd-8d6c-8d419f42811b" />
+The pipeline begins with a **Postgres** OLTP database, where changes are captured using **Debezium** and streamed to **Kafka**. **Apache Airflow** orchestrates this process, and a **Spark Structured Streaming** job reads the data from Kafka and lands it into the **Bronze Layer** of the Delta Lake. Spark continues to be the choice of transformation from the Bronze to the Silver layer, offering heavy lifting of cleaning up the table, maintaing the history. It also creates aggregated pre-Gold tables for easier SQL like consumption. Finally, core dbt is used for building business friendly SQL queries like aggregates and joins. 
+
+<img width="627" height="582" alt="HR Data   Analytics drawio (4)" src="https://github.com/user-attachments/assets/577fa8ee-a8e4-40fb-9b41-05579e6790db" />
+
 
 ----------
 
