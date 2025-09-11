@@ -1,0 +1,28 @@
+name: "hrdatapipeline"
+version: "1.0.0"
+config-version: 2
+
+profile: "hrdatapipeline"
+
+# Where your models live
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+snapshot-paths: ["snapshots"]
+analysis-paths: ["analysis"]
+macro-paths: ["macros"]
+
+target-path: "target"    # compiled SQL goes here
+clean-targets:
+  - "target"
+  - "dbt_modules"
+
+models:
+  hrdatapipeline:
+    +materialized: view # default materialization
+    +file_format: delta   
+    +location_root: "file:///C:/UpScale/HRProject/HRDataPipeline/analytics/delta/gold"
+    silver:
+      +schema: silver
+    gold:
+      +schema: gold

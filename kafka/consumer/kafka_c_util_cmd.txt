@@ -1,0 +1,10 @@
+PS C:\UpScale\HRProject\HRDataPipeline\kafka\schema> docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 `
+>>   --topic hr.contractor_signup --from-beginning --max-messages 5 --property print.key=true --property key.separator="|"
+
+
+9365|{"event_id":"ef8a22db-4d57-409e-9123-0d42aad30234","event_ts":"2025-09-08T03:22:14.303758+00:00","worker_id":9365,"worker_company":"QuickFix Ltd","worker_location":"Pune"}
+4730|{"event_id":"68ba3115-b917-41cd-a0fe-679001f9566f","event_ts":"2025-09-08T03:22:15.445555+00:00","worker_id":4730,"worker_company":"AcmeCorp","worker_location":"Bengaluru"}
+4986|{"event_id":"fdfb329b-a749-40e7-987e-7504a553298f","event_ts":"2025-09-08T03:22:15.646366+00:00","worker_id":4986,"worker_company":"QuickFix Ltd","worker_location":"Remote","worker_tenure":2.64}
+5239|{"event_id":"12e1b4b0-39d4-4dc2-bee7-c5c0639f5ead","event_ts":"2025-09-08T03:22:15.847340+00:00","worker_id":5239,"worker_company":"QuickFix Ltd","worker_location":"Delhi","worker_tenure":1.49}
+6096|{"event_id":"402f2a60-d548-4f2b-a535-e61d791e834a","event_ts":"2025-09-08T03:22:16.048244+00:00","worker_id":6096,"worker_company":"QuickFix Ltd","worker_location":"Remote","worker_tenure":0.01}
+Processed a total of 5 messages

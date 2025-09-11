@@ -1,0 +1,36 @@
+mkdir plugins
+
+
+docker run --rm -v ${PWD}\plugins:/connect-plugins confluentinc/cp-kafka-connect:7.6.1   bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter -d /connect-plugins || true; ls -la /connect-plugins"
+
+docker run --rm -v ${PWD}\plugins:/connect-plugins `
+  confluentinc/cp-kafka-connect:7.6.1 `
+  bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter -d /connect-plugins || true; ls -la /connect-plugins"
+
+docker run --rm -v ${PWD}\connect-plugins:/connect-plugins confluentinc/cp-kafka-connect:7.6.1  bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:1.8.0 -d /connect-plugins || true; ls -la /connect-plugins"
+
+
+# list the mounted plugin dir
+docker exec -it kafka-connect bash -c "ls -la /usr/share/connect-plugins || true; find /usr/share/connect-plugins -maxdepth 2 -type f -name '*.jar' -print || true"
+
+docker exec -it kafka-connect bash -c "ls -la /usr/share/confluent-hub-components || true; find /usr/share/confluent-hub-components -maxdepth 2 -type f -name '*.jar' -print || true"
+
+
+Verify the converter classes are present:
+
+
+#actual files (including .jar) under the extracted folder
+
+docker exec -it kafka-connect bash -c "ls -laR /usr/share/connect-plugins || true"
+#just the specific converter folder
+docker exec -it kafka-connect bash -c "ls -la /usr/share/connect-plugins/confluentinc-kafka-connect-json-schema-converter-8.0.0 || true"
+
+
+Confirm Connect loaded the plugin (check logs)
+docker compose logs kafka-connect --tail 200 | Select-String -Pattern "Loaded plugin|JsonSchemaConverter|json-schema|ERROR|Exception"
+
+Inspect converter jar to confirm the class is present
+# list the converter jar (first 200 lines)
+docker exec -it kafka-connect bash -c "jar tf /usr/share/connect-plugins/confluentinc-kafka-connect-json-schema-converter-8.0.0/lib/kafka-connect-json-schema-converter-8.0.0.jar | sed -n '1,200p'"
+
+

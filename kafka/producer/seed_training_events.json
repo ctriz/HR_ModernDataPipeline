@@ -1,0 +1,37 @@
+[
+  {
+    "employee_id": "E1001",
+    "training_id": "T001",
+    "event_type": "ENROLLED",
+    "event_timestamp": 1693477200000,
+    "deadline_date": "2025-09-15"
+  },
+  {
+    "employee_id": "E1001",
+    "training_id": "T001",
+    "event_type": "STARTED",
+    "event_timestamp": 1693563600000,
+    "deadline_date": "2025-09-15"
+  },
+  {
+    "employee_id": "E1001",
+    "training_id": "T001",
+    "event_type": "COMPLETED",
+    "event_timestamp": 1693822800000,
+    "deadline_date": "2025-09-15"
+  },
+  {
+    "employee_id": "E1002",
+    "training_id": "T002",
+    "event_type": "ENROLLED",
+    "event_timestamp": 1693650000000,
+    "deadline_date": "2025-09-30"
+  },
+  {
+    "employee_id": "E1003",
+    "training_id": "T003",
+    "event_type": "ENROLLED",
+    "event_timestamp": 1693736400000,
+    "deadline_date": "2025-09-20"
+  }
+]

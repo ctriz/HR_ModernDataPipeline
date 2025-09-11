@@ -1,0 +1,63 @@
+## Command set to register the schema. It can be tricky based on if you are using Open Source/Confluent or is using JSON/AVRO
+
+##Delete Subject
+
+$sr = "http://localhost:8081"
+$subject = "hr.contractor_signup-value"
+Invoke-RestMethod -Method Delete -Uri "$sr/subjects/$subject"
+
+##Option A (recommended): uses ConvertTo-Json -Compress to produce a correctly escaped JSON string for the schema field. This is the safest and simplest approach and avoids subtle escaping bugs.
+
+##Option B (manual): shows how to manually escape backslashes/quotes and replace newlines. Handy when you need custom control but more error-prone.
+
+## If you get 400 Cannot deserialize value of type 'String' from Object value, it means your POST sent "schema": { ... } (object) instead of "schema": "..." (string). Use Option A to avoid this.
+
+## If you use Windows CRLFs, ConvertTo-Json will escape them correctly; normalization in Validate helps avoid false mismatches.
+
+##Register Schema – Option A (recommended: ConvertTo-Json -Compress)
+
+$sr = 'http://localhost:8081'
+$subject = 'hr.contractor_signup-value'
+$versionsUri = "$sr/subjects/$subject/versions"
+
+$schemaRaw = Get-Content -Raw .\contractor_sign_up.json
+$schemaJsonString = $schemaRaw | ConvertTo-Json -Compress
+$body = '{"schema":' + $schemaJsonString + ',"schemaType":"JSON"}'
+
+Invoke-RestMethod -Uri $versionsUri -Method Post -ContentType "application/vnd.schemaregistry.v1+json" -Body $body
+
+##Register Schema – Option B (Manual Escaping)
+
+$sr = 'http://localhost:8081'
+$subject = 'hr.contractor_signup-value'
+$versionsUri = "$sr/subjects/$subject/versions"
+
+$schemaRaw = Get-Content -Raw .\contractor_sign_up.json
+$esc = $schemaRaw -replace '\\','\\\\' -replace '"','\"' -replace "`r`n","`\n" -replace "`n","`\n"
+$body = '{"schema":"' + $esc + '","schemaType":"JSON"}'
+
+Invoke-RestMethod -Uri $versionsUri -Method Post -ContentType "application/vnd.schemaregistry.v1+json" -Body $body
+
+
+
+## Set compatibility (e.g., BACKWARD)
+
+$cfgUri = "$sr/config/$subject"
+$cfgBody = '{"compatibility":"BACKWARD"}'
+Invoke-RestMethod -Method Put -Uri $cfgUri -ContentType 'application/vnd.schemaregistry.v1+json' -Body $cfgBody
+
+# Validate - List Subject
+
+Invoke-RestMethod -Method Get -Uri "$sr/subjects" | ConvertTo-Json
+
+# Validate - List Versions
+
+Invoke-RestMethod -Method Get -Uri "$sr/subjects/$subject/versions" | ConvertTo-Json
+
+# Validate - List Schema (Latest)
+
+Invoke-RestMethod -Method Get -Uri "$sr/subjects/$subject/versions/latest" | ConvertTo-Json -Depth 5
+
+
+
+

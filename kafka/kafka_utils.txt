@@ -1,0 +1,72 @@
+docker compose up -d kafka schema-registry kafka-connect
+
+
+docker compose build kafka-connect
+docker compose up -d kafka-connect
+
+# or, to force recreate the connect container:
+docker compose up -d --force-recreate kafka-connect
+docker-compose up -d --force-recreate kafka-connect
+docker compose logs -f kafka-connect
+
+docker-compose logs kafka-connect | Select-String -Pattern "ERROR|FATAL|Exception|Caused by:|permission denied|connection refused"
+
+docker-compose logs kafka-connect | findstr /C:"ERROR" /C:"FATAL" /C:"Exception" /C:"Caused by:"
+
+
+
+#list topics
+docker exec -it kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
+
+#delete topics
+docker exec -it begin-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic <topic-name>
+
+#peek messages
+docker exec -it kafka-kafka-1 kafka-console-consumer \
+  --bootstrap-server kafka:9092 \
+  --topic hr_txn.hr_txn.employee_compensation \
+  --from-beginning \
+  --property print.key=true --property print.headers=true --max-messages 5
+  
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.departments
+
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.employee_compensation
+
+docker-compose logs kafka-connect | Select-String -Pattern "ERROR|FATAL|Exception|Caused by:|permission denied|connection refused"
+
+docker-compose logs kafka-connect | findstr /C:"ERROR" /C:"FATAL" /C:"Exception" /C:"Caused by:"
+
+Clean StartSteps:
+
+docker compose up -d zookeeper
+docker compose up -d kafka
+docker compose up -d kafka-connect
+
+Verify:
+
+docker logs kafka-kafka-1 --tail=100
+
+docker logs kafka-kafka-connect-1 --tail=100
+
+
+C:\UpScale\HRProject\HRDataAnalytics\kafka>docker logs kafka-kafka-1 | findstr "advertised"
+
+
+docker exec -it kafka kafka-topics --create --topic hr.employee_events --partitions 6 --replication-factor 1 --bootstrap-server kafka:9092
+
+docker exec -it kafka kafka-console-consumer --bootstrap-server localhost:9092 --topic hr.employee_events --from-beginning --max-messages 5 --property print.key=true --property key.separator="|"
+
+#Register the schema
+
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schema": "'"$(jq -c -M . contractor_sign_up.json)"'"}' \
+  http://localhost:8081/subjects/hr.contractor_signup-value/versions
+  
+#Install the plugin
+
+docker run --rm -v "${PWD}\plugins:/plugins" confluentinc/cp-kafka-connect:7.6.1  bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:1.9.0 -d /connect-plugins || true; ls -la /connect-plugins"
+
+curl -s -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" `
+  --data '{"schema": "'"$(jq -c -M . contractor_sign_up.json)"'"}' `
+  http://localhost:8081/subjects/hr.contractor_signup-value/versions | jq
+

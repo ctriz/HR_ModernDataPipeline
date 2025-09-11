@@ -1,0 +1,10 @@
+FROM confluentinc/cp-kafka-connect:7.6.1
+
+# Install the JSON Schema converter plugin via confluent-hub
+# The plugin id is 'confluentinc/kafka-connect-json-schema-converter'
+# We install into the image so the class is present at startup.
+RUN confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:1.9.0
+# (Optional) install other useful connectors/plugins here
+
+# Ensure plugin path is OK (optional, default is /usr/share/java)
+ENV CONNECT_PLUGIN_PATH=/usr/share/java

@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContractorSignUp",
+  "type": "object",
+  "properties": {
+    "event_id":       { "type": "string" },
+    "event_ts":       { "type": "string", "format": "date-time" },
+    "worker_id":      { "type": "integer" },
+    "worker_company": { "type": "string" },
+    "worker_invalid_loc":{ "type": "string" },
+    "worker_tenure":  { "type": "number" }
+  },
+  "required": ["event_id", "event_ts", "worker_id", "worker_company", "worker_location"],
+  "additionalProperties": false
+}

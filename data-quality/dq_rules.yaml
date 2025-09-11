@@ -1,0 +1,37 @@
+employees:
+  - column: employee_code
+    rule: not_null
+    message: "employee_code cannot be null"
+
+  - column: employee_code
+    rule: unique
+    message: "employee_code must be unique"
+
+  - column: email
+    rule: not_null
+    message: "email cannot be null"
+
+  - column: email
+    rule: unique
+    message: "email must be unique"
+
+  - column: salary
+    rule: between
+    min: 60000
+    max: 200000
+    message: "salary must be between 60k and 200k"
+
+  - column: department_id
+    rule: foreign_key
+    reference: departments.department_id
+    message: "invalid department_id"
+
+  - column: job_id
+    rule: foreign_key
+    reference: jobs.job_id
+    message: "invalid job_id"
+
+  - column: location_id
+    rule: foreign_key
+    reference: locations.location_id
+    message: "invalid location_id"

@@ -1,0 +1,47 @@
+# Load only the inner "config" object from your JSON file
+
+$cfg = (Get-Content -Raw -Path .\debezium-postgres-connector.json | ConvertFrom-Json).config
+
+Invoke-RestMethod `
+  -Uri "http://localhost:8083/connectors/hr-txn-pg-source/config" `
+  -Method Put -ContentType "application/json" `
+  -Body ($cfg | ConvertTo-Json -Depth 10) |
+  ConvertTo-Json -Depth 10
+
+#Validate
+
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source/status | ConvertTo-Json -Depth 5
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source/tasks/0/status | ConvertTo-Json -Depth 5
+
+Invoke-RestMethod http://localhost:8083/connectors/hr-txn-pg-source | ConvertTo-Json -Depth 6
+
+C:\UpScale\HRProject\HRDataAnalytics>docker exec -it hrdataanalytics-kafka-connect-1 ls -l /usr/share/java/debezium-connector-postgres
+total 5384
+-rwxrwxrwx 1 root root  582228 Sep 20  2024 CHANGELOG.md
+-rwxrwxrwx 1 root root   19246 Sep 20  2024 CONTRIBUTE.md
+-rwxrwxrwx 1 root root    9078 Sep 20  2024 COPYRIGHT.txt
+-rwxrwxrwx 1 root root  161660 Sep 20  2024 LICENSE-3rd-PARTIES.txt
+-rwxrwxrwx 1 root root   11357 Sep 20  2024 LICENSE.txt
+-rwxrwxrwx 1 root root   16595 Sep 20  2024 README.md
+-rwxrwxrwx 1 root root   19608 Sep 20  2024 README_JA.md
+-rwxrwxrwx 1 root root   18365 Sep 20  2024 README_KO.md
+-rwxrwxrwx 1 root root   15739 Sep 20  2024 README_ZH.md
+-rwxrwxrwx 1 root root   29839 Sep 20  2024 debezium-api-2.7.3.Final.jar
+-rwxrwxrwx 1 root root  387374 Sep 20  2024 debezium-connector-postgres-2.7.3.Final.jar
+-rwxrwxrwx 1 root root 1264108 Sep 20  2024 debezium-core-2.7.3.Final.jar
+-rwxrwxrwx 1 root root 1074658 Feb 21  2024 postgresql-42.6.1.jar
+-rwxrwxrwx 1 root root 1875069 Jan 10  2024 protobuf-java-3.25.2.jar
+
+What's next:
+    Try Docker Debug for seamless, persistent debugging tools in any container or image → docker debug hrdataanalytics-kafka-connect-1
+    Learn more at https://docs.docker.com/go/debug-cli/
+
+C:\UpScale\HRProject\HRDataAnalytics>docker exec -it hrdataanalytics-kafka-connect-1 printenv | grep CONNECT_PLUGIN_PATH
+'grep' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\UpScale\HRProject\HRDataAnalytics>docker exec -it hrdataanalytics-kafka-connect-1 printenv | findstr CONNECT_PLUGIN_PATH
+CONNECT_PLUGIN_PATH=/usr/share/java,/usr/share/confluent-hub-components
+
+docker compose up -d --force-recreate --build kafka-connect
+   

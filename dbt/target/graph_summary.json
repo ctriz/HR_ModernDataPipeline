@@ -1,0 +1,1 @@
+{"_invocation_id": "83242e35-1b94-44c0-9199-af16494e2611", "linked": {"0": {"name": "source.hrdatapipeline.bronze.employees", "type": "source"}, "1": {"name": "model.hrdatapipeline.gold_attrition_prototype", "type": "model"}}}

@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: bronze
+    description: "Raw ingested tables from Postgres (CDC)"
+    schema: bronze
+    tables:
+      - name: employees
+        external:
+          location: "C://UpScale//HRProject//HRDataPipeline//analytics//delta//bronze//employees"
+          file_format: delta

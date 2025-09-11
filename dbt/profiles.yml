@@ -1,0 +1,11 @@
+hrdatapipeline:
+  target: dev
+  outputs:
+    dev:
+      type: spark
+      method: session
+      host: localhost
+      port: 10000
+      schema: default
+      connect_timeout: 30
+      

@@ -1,0 +1,25 @@
+$env:KAFKA_BOOTSTRAP = "localhost:9092"
+$env:SCHEMA_REGISTRY_URL = "http://localhost:8081"
+$env:KAFKA_TOPIC = "hr.contractor_signup"
+python producer_contractors_jsonschema.py
+
+
+
+#Demostrate producing an incompatible.json
+
+curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data '{"schema":"'"$(jq -c -M . contractor_sign_up_incompatible.json)"'"}' \
+  http://localhost:8081/compatibility/subjects/hr.contractor_signup-value/versions/latest
+  
+  
+# Produce a valid event
+
+docker exec -i kafka kafka-console-producer --broker-list localhost:9092 --topic hr.contractor_signup
+{"event_id":"test-valid-1","event_ts":"2025-09-08T10:00:00Z","worker_id":111,"worker_company":"Acme","worker_location":"Delhi"}
+
+# Produce an valid event
+
+docker exec -i kafka kafka-console-producer --broker-list localhost:9092 --topic hr.contractor_signup
+{"event_id":"bad-1","event_ts":"2025-09-08T10:01:00Z","worker_id":"not-an-int","worker_company":"Acme"}
+
+
