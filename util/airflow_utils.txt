@@ -1,0 +1,21 @@
+docker exec -it airflow-webserver bash
+python /opt/airflow/jobs/mutate_dim_fact.py --cycles 1
+
+C:\UpScale\HRProject\HRDataAnalytics>docker exec -it airflow-webserver bash
+airflow connections delete spark_default
+airflow connections add spark_default \
+    --conn-type spark \
+    --conn-extra '{"master": "local[*]", "spark_binary": "spark-submit"}'airflow@e4f7274afe70:/opt/airflow$ airflow connections delete spark_default
+	
+	
+
+docker exec -it airflow-webserver airflow connections add spark_default --conn-type spark --conn-extra "{\"master\": \"local[*]\", \"spark_binary\": \"spark-submit\"}"
+
+
+docker exec -it airflow-webserver airflow connections add spark_default --conn-type spark --conn-extra "{\"master\": \"local[*]\", \"spark_binary\": \"spark-submit\"}"
+
+C:\UpScale\HRProject\HRDataAnalytics>docker exec -it airflow-webserver airflow connections get spark_default
+id | conn_id       | conn_type | description | host | schema | login | password | port | is_encrypted | is_extra_encrypted | extra_dejson                             | get_uri
+===+===============+===========+=============+======+========+=======+==========+======+==============+====================+==========================================+==========================================
+62 | spark_default | spark     | None        | None | None   | None  | None     | None | False        | False              | {'master': 'local[*]', 'spark_binary':   | spark:///?master=local%5B%2A%5D&spark_bin
+   |               |           |             |      |        |       |          |      |              |                    | 'spark-submit'}                          | ary=spark-submit

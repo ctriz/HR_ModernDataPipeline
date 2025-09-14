@@ -1,0 +1,39 @@
+#list topics
+docker exec -it kafka-kafka-1 kafka-topics --bootstrap-server kafka:9092 --list
+
+#delete topics
+docker exec -it begin-kafka-1 kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic <topic-name>
+
+#peek messages
+docker exec -it kafka-kafka-1 kafka-console-consumer \
+  --bootstrap-server kafka:9092 \
+  --topic hr_txn.hr_txn.employee_compensation \
+  --from-beginning \
+  --property print.key=true --property print.headers=true --max-messages 5
+  
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.departments
+
+docker exec -it begin-kafka-1 kafka-topics --bootstrap-server kafka:29092 --delete --topic hr_txn.hr_txn.employee_compensation
+
+docker-compose logs kafka-connect | Select-String -Pattern "ERROR|FATAL|Exception|Caused by:|permission denied|connection refused"
+
+docker-compose logs kafka-connect | findstr /C:"ERROR" /C:"FATAL" /C:"Exception" /C:"Caused by:"
+
+
+
+Clean StartSteps:
+
+docker compose up -d zookeeper
+docker compose up -d kafka
+docker compose up -d kafka-connect
+
+Verify:
+
+docker logs kafka-kafka-1 --tail=100
+
+docker logs kafka-kafka-connect-1 --tail=100
+
+
+C:\UpScale\HRProject\HRDataAnalytics\kafka>docker logs kafka-kafka-1 | findstr "advertised"
+        advertised.listeners = PLAINTEXT://kafka:9092,PLAINTEXT_HOST://host.docker.internal:29092,PLAINTEXT_LOCAL://localhost:29092
+

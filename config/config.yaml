@@ -1,0 +1,19 @@
+postgres:
+  host: host.docker.internal
+  port: 5432
+  database: postgres
+  user: ${PGUSER}
+  password: ${PGPASSWORD}
+
+kafka:
+  brokers: "kafka:9092"
+  topics:
+    departments: "hr_txn.hr_txn.departments"
+    salaries: "hr_txn.hr_txn.employee_compensation"
+
+delta:
+  base_path: "/delta"
+  checkpoint_path: "/delta/checkpoints"
+spark:
+  master: local[*]
+
